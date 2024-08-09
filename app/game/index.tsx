@@ -201,6 +201,10 @@ export default function Demo() {
 
   useEffect(() => {
     lockOrientation();
+
+    return () => {
+      ScreenOrientation.unlockAsync();
+    }
   }, []);
 
   const lockOrientation = async () => {

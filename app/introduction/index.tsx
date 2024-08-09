@@ -169,7 +169,6 @@
 
 // export default App;
 
-
 import React, { useEffect, useRef, useState } from "react";
 import {
   Image,
@@ -180,198 +179,120 @@ import {
   Animated,
 } from "react-native";
 import img1 from "@/assets/images/cytadel/bright pixel interior zoomed in day time.webp";
-import ResponsiveComponent, {
-  useResponsive,
-} from "../utils/ResponsiveProvider";
-import textBgW from "@/assets/images/cytadel/backgrounds/TextBg White.png";
-import textBgR from "@/assets/images/cytadel/backgrounds/TextBg Red.png";
-import dialoguesData from "@/components/dialogues/dialogues.json";
-import matt from "@/assets/images/cytadel/matt/matt_amused.webp";
-import Demo from "../game";
-import Dialogue from "@/components/dialogues/dialogue1";
-function HomeScreen(props: any) {
+import introSim from "@/assets/images/cytadel/backgrounds/introSimon.png";
+import ResponsiveComponent, { useResponsive } from "../utils/ResponsiveProvider";
+
+export function HomeScreen(props: any) {
   const { h, w, viewportWidth, viewportHeight } = useResponsive();
   const translateY = useRef(new Animated.Value(-viewportHeight)).current;
   const translateY2 = useRef(new Animated.Value(viewportHeight)).current;
   const [animationCompleted, setAnimationCompleted] = useState(false);
-  const [showNewImage, setShowNewImage] = useState(false);
 
-  const setResImg = props.setRes;
-  const setBlack = props.setBlack;
-
-  useEffect(() => {
-    // Start the animations
-    Animated.parallel([
-      Animated.timing(translateY, {
-        toValue: 60,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateY2, {
-        toValue: 200,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      // Animation completed
-      setAnimationCompleted(true);
-    });
-  }, [viewportHeight, translateY, translateY2]);
+  const char = props.char;
+  const duration = props.duration;
+  const { isPlaying, skip, setSkip, onEnd } = props;
 
   useEffect(() => {
-    if (animationCompleted) {
-      // Set a timeout to display the new image after 5 seconds
-      const timeoutId = setTimeout(() => {
-        setShowNewImage(true);
-        setResImg(textBgR);
-        setBlack(true)
-      }, 5000);
+    const startAnimations = () => {
+      Animated.parallel([
+        Animated.timing(translateY, {
+          toValue: 60,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateY2, {
+          toValue: 200,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setAnimationCompleted(true);
+      });
+    };
 
-      return () => clearTimeout(timeoutId);
+    if (isPlaying) {
+      startAnimations();
+    } else {
+      translateY.stopAnimation();
+      translateY2.stopAnimation();
     }
-  }, [animationCompleted]);
+  }, [isPlaying, viewportHeight, translateY, translateY2]);
+
+  useEffect(() => {
+    if (skip ) {
+      onEnd();
+      setSkip(false);
+    }
+  }, [skip, onEnd, setSkip]);
+
+  useEffect(() => {
+    if(isPlaying) {
+      const timer = setTimeout(() => {
+        onEnd();
+      }, duration);  
+
+    return () => clearTimeout(timer);
+
+    }
+
+  }, [isPlaying, duration, onEnd]);
 
   return (
     <View
       style={{
         width: viewportWidth,
         height: viewportHeight,
-        alignItems: "flex-end",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        flexDirection: "column",
+        zIndex: 2,
       }}
     >
-      {showNewImage ? (
-        // <Image
-        //   source={matt}
-        //   style={{ width: viewportWidth, height: viewportHeight }}
-        // />
-        <View style={styles.dia}>
-          <Dialogue dialogues={dialoguesData}/>
-          </View>
-      ) : (
-        <View
+      <View style={{ height: viewportHeight * 0.8 }}>
+        <Text
           style={{
-            width: "95%",
-            height: "100%",
-            justifyContent: "center",
-            display: "flex",
-            flexDirection: "row",
+            fontSize: w(650),
+            fontWeight: "700",
+            transform: [{ rotate: "-5deg" }],
+            color: "white",
+            textShadowColor: "#585858",
+            textShadowOffset: { width: 5, height: 5 },
+            textShadowRadius: 10,
+            fontFamily: "Thunder",
           }}
         >
-          <Animated.View
-            style={{
-              transform: [{ translateY: translateY }],
-              width: w(900),
-              height: h(700),
-              zIndex: 1,
-            }}
-          >
-            <ImageBackground
-              source={textBgW}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: "Thunder",
-                  fontWeight: "700",
-                  fontSize: w(200),
-                  color: "#E4637C",
-                  marginLeft: "10%",
-                }}
-              >
-                Race against time
-              </Text>
-            </ImageBackground>
-          </Animated.View>
+          {char}
+        </Text>
+      </View>
 
-          <Animated.View
-            style={{
-              transform: [{ translateY: translateY2 }],
-              width: w(900),
-              height: h(700),
-              marginLeft: "-2%",
-            }}
-          >
-            <ImageBackground
-              source={textBgR}
-              style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: "Thunder",
-                  fontWeight: "700",
-                  fontSize: w(50),
-                  color: "black",
-                  marginLeft: "10%",
-                }}
-              >
-                As a powerhouse in the advertising world, Bright Pixel is used
-                to the limelight. But envy and cutthroat competition expose the
-                company to sinister cyberattacks leaving it no option but to
-                intensify its cybersecurity efforts, bracing for battles unseen
-                ...
-              </Text>
-            </ImageBackground>
-          </Animated.View>
-        </View>
-      )}
+      <View style={{ height: viewportHeight * 0.2 }}>
+        <Text
+          style={{
+            fontSize: w(650),
+            fontWeight: "700",
+            transform: [{ rotate: "-5deg" }],
+            color: "white",
+            textShadowColor: "#585858",
+            textShadowOffset: { width: 5, height: 5 },
+            textShadowRadius: 10,
+            fontFamily: "Thunder",
+          }}
+        >
+          {char}
+        </Text>
+      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  scrollView: {
-    flexDirection: "row",
-    borderRadius: 12,
-  },
-  card: {
-    width: 200,
-    height: 150,
-    backgroundColor: "#f0f0f0",
-    marginHorizontal: 10,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 8,
-  },
-  cardText: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
 
-  image: {
-    width: "100%",
-    height: "100%",
-    flexDirection: "row",
-  },
-  imageContainer: {
-    flex: 1,
-    aspectRatio: 1,
-    overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%",
-  },
-  dia: {
-    position: "absolute",
-  },
-});
-
-const App = () => {
-
-  const [resimg, setResImg] = useState(img1);
-  const [black, setBlack] = useState(false);
+const Introduction = () => {
   return (
-    <ResponsiveComponent source={resimg} intro= {black}>
-      <HomeScreen setRes= {setResImg} setBlack={setBlack}/>
+    <ResponsiveComponent source={introSim} intro={true}>
+      <HomeScreen />
     </ResponsiveComponent>
   );
 };
 
-export default App;
+export default Introduction;

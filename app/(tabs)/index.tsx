@@ -5,10 +5,15 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Link } from 'expo-router';
-import { Provider } from 'react-redux';
-import store from '../utils/redux/store';
+import { useEffect } from 'react';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 export default function HomeScreen() {
+
+  useEffect(() => {
+    ScreenOrientation.unlockAsync();
+  }
+  , []);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -23,7 +28,7 @@ export default function HomeScreen() {
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <Link href={"../(game)"}>
+        <Link href={"../gameEngine"}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         </Link>
         <ThemedText>
@@ -44,7 +49,9 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
+      <Link href={"../introduction"}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
+        </Link>
         <ThemedText>
           When you're ready, run{' '}
           <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}

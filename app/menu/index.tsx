@@ -1,15 +1,24 @@
+import { useMenuStore } from "@/zustand/store";
 import { router } from "expo-router";
 import { Button, StyleSheet, View } from "react-native";
 
 const MenuPage = () => {
+  const paused = useMenuStore((state) => state.paused);
+  const setIsPlaying = useMenuStore((state) => state.play);
+
+  const handleBack = () => {
+    if (!paused) {
+      setIsPlaying(true);
+    }
+  };
   return (
     <>
       <View style={styles.overlay}>
         <Button
           title="Close"
           onPress={() => {
+            handleBack();
             router.back();
-
           }}
         />
       </View>

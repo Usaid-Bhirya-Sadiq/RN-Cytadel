@@ -1,10 +1,20 @@
+import { useMenuStore } from "@/zustand/store";
 import { Entypo } from "@expo/vector-icons";
 import { router } from "expo-router";
 import {StyleSheet } from "react-native";
 
-const Menu = (props: any) => {
+const Menu = () => {
 
-    const set= props.set
+  const setMenuVisible = useMenuStore((state) => state.setMenuVisible);
+  const setIsPlaying = useMenuStore((state) => state.play);
+  const paused = useMenuStore((state) => state.paused);
+  const setPaused = useMenuStore((state) => state.setPaused);
+
+  const handleMenu = () => {
+    if (!paused) {
+      setIsPlaying(false);
+    }
+  }
 
   return (
     <>
@@ -13,7 +23,7 @@ const Menu = (props: any) => {
         size={40}
         style={styles.controlButton}
         color="black"
-        onPress={() => {router.push("/menu"), set(true)}}
+        onPress={() => {router.push("/menu"),handleMenu() , setMenuVisible(true)}}
       />
     </>
   );

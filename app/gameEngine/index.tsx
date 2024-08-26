@@ -10,14 +10,26 @@ import Menu from "@/components/menu/Menu";
 import data from "@/components/dial2/testDial.json";
 import { HomeScreen } from "../introduction";
 import { router } from "expo-router";
+import { useMenuStore } from "@/zustand/store";
 
 const Game = () => {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [skip, setSkip] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  // const [isPlaying, setIsPlaying] = useState(true);
+  // const [skip, setSkip] = useState(false);
+  // const [isFullScreen, setIsFullScreen] = useState(false);
+  // const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0);
   const [currentScene, setCurrentScene] = useState(data.scenes[0]);
+
+  const isPlaying = useMenuStore((state) => state.isPlaying);
+  const setIsPlaying = useMenuStore((state) => state.play);
+  const skip = useMenuStore((state) => state.skip);
+  const setSkip = useMenuStore((state) => state.setSkip);
+  const isFullScreen = useMenuStore((state) => state.isFullScreen);
+  const setIsFullScreen = useMenuStore((state) => state.setFullScreen);
+  const isMenuVisible = useMenuStore((state) => state.isMenuVisible);
+  const setIsMenuVisible = useMenuStore((state) => state.setMenuVisible);
+  const paused = useMenuStore((state) => state.paused);
+  const setPaused = useMenuStore((state) => state.setPaused);
 
 
   const playSound = async () => {
@@ -28,7 +40,8 @@ const Game = () => {
   };
 
   const togglePlayPause = async () => {
-    setIsPlaying((prevState) => !prevState);
+    setIsPlaying(!isPlaying);
+    setPaused(!paused);
     await playSound();
   };
 
@@ -110,7 +123,7 @@ const Game = () => {
     <View style={{ flex: 1 }}>
       {renderScene()}
       <View style={styles.controls}>
-        <Menu set={setIsMenuVisible} />
+        <Menu />
         <AntDesign
           style={styles.controlButton}
           name={isPlaying ? "pausecircleo" : "playcircleo"}
